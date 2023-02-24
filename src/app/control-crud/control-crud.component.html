@@ -1,0 +1,148 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
+            <button pButton pRipple label="Eliminar" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length"></button>
+        </ng-template>
+
+        <ng-template pTemplate="right">
+            <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="p-mr-2 p-d-inline-block"></p-fileUpload>
+            <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table #dt [value]="products" [rows]="10" [paginator]="true" [globalFilterFields]="['name','country.name','representative.name','status']"
+        [(selection)]="selectedProducts" [rowHover]="true" dataKey="id"
+        currentPageReportTemplate="Monstrando {first} a {last} de {totalRecords} elementos" [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                <h5 class="p-m-0">Juegos</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <!-- <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." /> -->
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th pSortableColumn="name">Maquina <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="cantidad_usuarios">Usuarios <p-sortIcon field="cantidad_usuarios"></p-sortIcon></th>
+                <th pSortableColumn="tiempo">Tiempos (minutos) <p-sortIcon field="tiempo"></p-sortIcon></th>
+                <th pSortableColumn="inicio">Inicio <p-sortIcon field="inicio"></p-sortIcon></th>
+                <th pSortableColumn="inicio">FInaliza <p-sortIcon field="fin"></p-sortIcon></th>
+                <th pSortableColumn="contador">Tiempo transcurrido <p-sortIcon field="contador"></p-sortIcon></th>
+                <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+                
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="product"></p-tableCheckbox>
+                </td>
+                <td>{{product.name}}</td>
+                <td>{{product.cantidad_usuarios}}</td>
+                <td>{{product.tiempo}}</td>
+                <td>{{product.inicio | date:'short'}}</td>
+                <td>{{product.fin | date:'short'}}</td>
+                <td>{{product.contador}}</td>
+                <td [ngStyle]="product.estado == 'ACTIVO' ? {'color': '#01C253'} : {'color': '#F10003'}">{{product.estado}}</td>
+              
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editProduct(product)"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduct(product)"></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                En total hay {{products ? products.length : 0 }} maquinas.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Detalle maquina" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="p-field">
+            <label class="p-mb-3">Maquina</label>
+            <div class="p-formgrid p-grid">
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category1" name="category" value="Uno" [(ngModel)]="product.name"></p-radioButton>
+                    <label for="category1">Uno</label>
+                </div>
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category2" name="category" value="Dos" [(ngModel)]="product.name"></p-radioButton>
+                    <label for="category2">Dos</label>
+                </div>
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category3" name="category" value="Tres" [(ngModel)]="product.name"></p-radioButton>
+                    <label for="category3">Tres</label>
+                </div>
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category4" name="category" value="Cuatro" [(ngModel)]="product.name"></p-radioButton>
+                    <label for="category4">Cuatro</label>
+                </div>
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category5" name="category" value="Cinco" [(ngModel)]="product.name"></p-radioButton>
+                    <label for="category5">Cinco</label>
+                </div>
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category6" name="category" value="Seis" [(ngModel)]="product.name"></p-radioButton>
+                    <label for="category5">Seis</label>
+                </div>
+            </div>
+        </div> 
+        <br/>
+        <div class="p-field">
+            <label for="cantidad_usuarios">Cantidad de usuarios</label>
+            <p-inputNumber id="cantidad_usuarios" [(ngModel)]="product.cantidad_usuarios"></p-inputNumber>
+        </div>
+        <div class="p-field">
+            <label for="tiempo">Tiempo</label>
+            <p-inputNumber id="tiempo" [(ngModel)]="product.tiempo"></p-inputNumber>
+        </div>
+ 
+
+        <!-- <div class="p-field">
+            <label for="description">Description</label>
+            <textarea id="description" pInputTextarea [(ngModel)]="product.description" required rows="3" cols="20"></textarea>
+        </div>
+
+        <div class="p-field">
+            <label class="p-mb-3">Category</label>
+            <div class="p-formgrid p-grid">
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category1" name="category" value="Accessories" [(ngModel)]="product.category"></p-radioButton>
+                    <label for="category1">Accessories</label>
+                </div>
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category2" name="category" value="Clothing" [(ngModel)]="product.category"></p-radioButton>
+                    <label for="category2">Clothing</label>
+                </div>
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category3" name="category" value="Electronics" [(ngModel)]="product.category"></p-radioButton>
+                    <label for="category3">Electronics</label>
+                </div>
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="category4" name="category" value="Fitness" [(ngModel)]="product.category"></p-radioButton>
+                    <label for="category4">Fitness</label>
+                </div>
+            </div>
+        </div> -->
+
+    </ng-template>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveProduct()"></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
